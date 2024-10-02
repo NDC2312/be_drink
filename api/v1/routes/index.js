@@ -5,6 +5,7 @@ const BlogCategory = require("./blogs-category.route");
 const Account = require("./account.route");
 const Role = require("./role.route");
 const Customer = require("./customer.route");
+const Auth = require("./auth.route");
 const requireAuth = require("../middlewares/auth.middleware");
 
 module.exports = (app) => {
@@ -26,4 +27,5 @@ module.exports = (app) => {
   app.use(version + "/role", requireAuth.requireAuth, Role);
 
   app.use(version + "/customer", Customer);
+  app.use(version + "/auth", Auth);
 };

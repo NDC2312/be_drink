@@ -73,7 +73,13 @@ module.exports.login = async (req, res) => {
   const permissions = await Role.findOne({
     _id: user.role_id,
   }).select("permissions");
-
+  if (!permissions) {
+    res.json({
+      code: 400,
+      message: "Bạn không có quyền truy cập vào tài nguyên này.",
+    });
+    return;
+  }
   const token = user.token;
 
   res.cookie("token", token);

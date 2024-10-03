@@ -3,6 +3,10 @@ const router = express.Router();
 
 const controller = require("../controllers/auth.controller");
 
-router.post("/goggle", controller.goggleLogin);
+router.post("/google", controller.googleLogin);
+
+router.post("/register", controller.register);
+
+router.post("/login", controller.login);
 
 module.exports = router;

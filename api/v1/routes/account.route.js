@@ -6,7 +6,7 @@ const auth = require("../middlewares/auth.middleware");
 
 router.post(
   "/register",
-  auth.requirePermission("accounts-create"),
+  //  auth.requirePermission("accounts-create"),
   controller.register
 );
 

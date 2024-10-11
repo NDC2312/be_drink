@@ -5,13 +5,17 @@ const BlogCategory = require("./blogs-category.route");
 const Account = require("./account.route");
 const Role = require("./role.route");
 const Auth = require("./auth.route");
+
+//client
+const ProductsClient = require("./products-client");
+
 const requireAuth = require("../middlewares/auth.middleware");
 
 module.exports = (app) => {
   const version = "/api/v1";
 
   app.use(version + "/products", requireAuth.requireAuth, Products);
-
+  app.use(version + "/products-client", ProductsClient);
   app.use(
     version + "/products-category",
     requireAuth.requireAuth,

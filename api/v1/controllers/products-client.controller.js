@@ -37,7 +37,19 @@ module.exports.productCategory = async (req, res) => {
     deleted: false,
     status: "active",
   });
-  const tree = createTree.tree(productCategory);
+  const productCategoryTree = createTree.tree(productCategory);
+  const createTree = (data) => {
+    const results = [];
+    data.forEach((item) => {
+      const newItem = item._doc;
+      if (item.children) {
+        newItem.children = createTree(item.children);
+      }
+      results.push(newItem);
+    });
+    return results;
+  };
+  const tree = createTree(productCategoryTree);
   res.json(tree);
 };
 

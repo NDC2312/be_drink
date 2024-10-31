@@ -10,7 +10,12 @@ const routesApiVer1 = require("./api/v1/routes/index");
 database.connect();
 const app = express();
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Địa chỉ của frontend (thay đổi nếu cần)
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 const port = process.env.PORT;
 

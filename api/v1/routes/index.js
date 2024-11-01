@@ -16,7 +16,7 @@ const requireCart = require("../middlewares/cart.middleware");
 module.exports = (app) => {
   const version = "/api/v1";
 
-  // app.use(requireCart.cartId);
+  app.use(requireCart.cartId);
   app.use(version + "/products", requireAuth.requireAuth, Products);
   app.use(version + "/products-client", ProductsClient);
   app.use(

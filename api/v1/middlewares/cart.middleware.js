@@ -8,9 +8,9 @@ module.exports.cartId = async (req, res, next) => {
       const expiresCookie = 365 * 24 * 60 * 60 * 1000;
       res.cookie("cartId", cart._id, {
         expires: new Date(Date.now() + expiresCookie),
-
-        httpOnly: true, // Đảm bảo cookie chỉ được gửi qua HTTP
-        sameSite: "lax", // Đảm bảo cookie an toàn hơn khi chia sẻ
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
       });
     } else {
       const cart = await Cart.findOne({

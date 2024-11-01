@@ -10,15 +10,8 @@ const routesApiVer1 = require("./api/v1/routes/index");
 database.connect();
 const app = express();
 app.use(cookieParser());
-
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Địa chỉ của React app
-    credentials: true, // Cho phép gửi cookie cùng với các yêu cầu từ React
-  })
-);
+app.use(cors());
 app.use(bodyParser.json());
-
 const port = process.env.PORT;
 
 // Router api/V1

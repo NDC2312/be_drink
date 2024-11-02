@@ -154,3 +154,40 @@ module.exports.update = async (req, res) => {
     });
   }
 };
+
+module.exports.cartId = async (req, res) => {
+  try {
+    if (!req.cookies.cartId) {
+      const cart = new Cart();
+      await cart.save();
+      const expiresCookie = 365 * 24 * 60 * 60 * 1000;
+      res.cookie("cartId", cart._id, {
+        expires: new Date(Date.now() + expiresCookie),
+        httpOnly: true, // để trình duyệt chỉ gửi cookie qua HTTP(S) request
+        secure: true, // yêu cầu HTTPS
+        sameSite: "None", // cho phép chia sẻ giữa các tên miền
+      });
+      res.json("luu cookies");
+    } else {
+      // res.cookie("cartId", "", { expires: new Date(0) }); // Đặt expires là thời điểm trong quá khứ
+      // res.json({ message: "Cart cookie has been cleared" });
+      const cart = await Cart.findOne({
+        _id: req.cookies.cartId,
+      });
+      if (!cart) {
+        console.log("kh");
+        res.json("NO");
+        return;
+      }
+      console.log(cart);
+      cart.totalQuantity = cart.products.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+      res.json("oke");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

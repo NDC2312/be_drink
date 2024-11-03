@@ -18,7 +18,7 @@ module.exports.index = async (req, res) => {
         }).select("title thumbnail price slug discountPercentage");
         products.priceNew = productsHelper.priceNewProduct(products);
         item.productInfo = products;
-        item.totalPrice = products.priceNew * item.quantity;
+        item.priceNew = products.priceNew * item.quantity;
       }
     }
     cart.totalPrice = cart.products.reduce(
@@ -31,6 +31,7 @@ module.exports.index = async (req, res) => {
         ...item.toJSON(),
         productInfo: item.productInfo,
         totalPrice: item.totalPrice,
+        priceNew: item.priceNew,
       };
     });
 

@@ -25,13 +25,11 @@ module.exports.index = async (req, res) => {
       (sum, item) => sum + item.totalPrice,
       0
     );
-    const productInfo = cart.products.map((item) => {
-      return item.productInfo;
-    });
+
     const updatedCartProducts = cart.products.map((item) => {
       return {
         ...item.toJSON(),
-        productInfo: productInfo,
+        productInfo: item.productInfo,
         totalPrice: item.totalPrice,
       };
     });

@@ -175,16 +175,15 @@ module.exports.cartId = async (req, res) => {
         _id: req.cookies.cartId,
       });
       if (!cart) {
-        console.log("kh");
-        res.json("NO");
+        res.json("Not found cart");
         return;
       }
-      console.log(cart);
       cart.totalQuantity = cart.products.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        2
       );
-      res.json("oke");
+
+      res.json(cart.totalQuantity);
     }
   } catch (error) {
     console.error(error);

@@ -180,7 +180,7 @@ module.exports.cartId = async (req, res) => {
       }
       cart.totalQuantity = cart.products.reduce(
         (sum, item) => sum + item.quantity,
-        2
+        0
       );
 
       res.json(cart.totalQuantity);

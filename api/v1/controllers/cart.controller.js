@@ -18,11 +18,11 @@ module.exports.index = async (req, res) => {
         }).select("title thumbnail price slug discountPercentage");
         products.priceNew = productsHelper.priceNewProduct(products);
         item.productInfo = products;
-        item.priceNew = products.priceNew * item.quantity;
+        item.totalPriceProduct = products.priceNew * item.quantity;
       }
     }
     cart.totalPrice = cart.products.reduce(
-      (sum, item) => sum + item.priceNew,
+      (sum, item) => sum + item.totalPriceProduct,
       0
     );
 
@@ -30,8 +30,9 @@ module.exports.index = async (req, res) => {
       return {
         ...item.toJSON(),
         productInfo: item.productInfo,
-        totalPrice: item.totalPrice,
-        priceNew: item.priceNew,
+        totalPrice: cart.totalPrice,
+        priceNew: item.productInfo.priceNew,
+        totalPriceProduct: item.totalPriceProduct,
       };
     });
 

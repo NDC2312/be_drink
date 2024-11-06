@@ -5,18 +5,17 @@ const BlogCategory = require("./blogs-category.route");
 const Account = require("./account.route");
 const Role = require("./role.route");
 const Auth = require("./auth.route");
+const Checkout = require("./checkout.route");
 
 //client
 const ProductsClient = require("./products-client");
 const Cart = require("./cart.route");
 
 const requireAuth = require("../middlewares/auth.middleware");
-const requireCart = require("../middlewares/cart.middleware");
 
 module.exports = (app) => {
   const version = "/api/v1";
 
-  // app.use(requireCart.cartId);
   app.use(version + "/products", requireAuth.requireAuth, Products);
   app.use(version + "/products-client", ProductsClient);
   app.use(
@@ -34,4 +33,5 @@ module.exports = (app) => {
   app.use(version + "/role", requireAuth.requireAuth, Role);
 
   app.use(version + "/auth", Auth);
+  app.use(version + "/checkout", Checkout);
 };

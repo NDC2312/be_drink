@@ -135,6 +135,22 @@ module.exports.login = async (req, res) => {
   });
 };
 
+// [GET] api/v1/auth/myAuth
+module.exports.myAuth = async (req, res) => {
+  try {
+    const token = req.body.token;
+    const auth = await Auth.findOne({
+      tokenAuth: token,
+    }).select("-password -tokenAuth");
+    res.json(auth);
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Lỗi, token.",
+    });
+  }
+};
+
 // [GET] api/v1/auth/index
 module.exports.index = async (req, res) => {
   try {

@@ -5,9 +5,11 @@ const orderSchema = new mongoose.Schema(
     user_id: String,
     cart_id: String,
     userInfo: {
+      email: String,
       fullName: String,
       phone: String,
       address: String,
+      note: String,
     },
     products: [
       {
@@ -17,7 +19,10 @@ const orderSchema = new mongoose.Schema(
         quantity: Number,
       },
     ],
-
+    status: {
+      type: String,
+      default: "spending",
+    },
     deleted: {
       type: Boolean,
       default: false,

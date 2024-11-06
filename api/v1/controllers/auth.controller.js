@@ -80,7 +80,7 @@ module.exports.register = async (req, res) => {
       password: password,
       fullName: req.body.fullName,
       tokenAuth: generateHeper.generateString(20),
-      picture: req.body.picture,
+      picture: "",
       phone: req.body.phone,
       linkedAuth: { google: false, password: true },
     });

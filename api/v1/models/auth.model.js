@@ -11,6 +11,7 @@ const authSchema = new mongoose.Schema(
     password: String,
     picture: String,
     tokenAuth: String,
+    phone: String,
     linkedAuth: {
       google: {
         type: Boolean,

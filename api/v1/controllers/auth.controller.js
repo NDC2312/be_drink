@@ -138,7 +138,7 @@ module.exports.login = async (req, res) => {
 // [GET] api/v1/auth/myAuth
 module.exports.myAuth = async (req, res) => {
   try {
-    const tokenAuth = req.body.tokenAuth;
+    const tokenAuth = req.headers.authorization.split(" ")[1];
     const auth = await Auth.findOne({
       tokenAuth: tokenAuth,
     }).select("-password -tokenAuth");

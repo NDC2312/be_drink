@@ -138,9 +138,9 @@ module.exports.login = async (req, res) => {
 // [GET] api/v1/auth/myAuth
 module.exports.myAuth = async (req, res) => {
   try {
-    const token = req.body.token;
+    const tokenAuth = req.body.tokenAuth;
     const auth = await Auth.findOne({
-      tokenAuth: token,
+      tokenAuth: tokenAuth,
     }).select("-password -tokenAuth");
     res.json(auth);
   } catch (error) {

@@ -2,6 +2,7 @@ const Cart = require("../models/cart.model");
 const Product = require("../models/products.model");
 const Order = require("../models/order.model");
 const productsHelper = require("../../../Helper/product.helper");
+const sendMailHelper = require("../../../Helper/sendMail");
 
 // [GET] api/v1/checkout
 module.exports.index = async (req, res) => {
@@ -54,12 +55,19 @@ module.exports.order = async (req, res) => {
   const cartId = req.cookies.cartId;
   const user_id = req.params.user_id;
   const userInfo = req.body;
+  const email = req.body.email;
+  const fullName = req.body.fullName;
+  const phone = req.body.phone;
+  const address = req.body.address;
+  const note = req.body.note;
+
   console.log(userInfo);
   const cart = await Cart.findOne({
     _id: cartId,
   });
 
   const products = [];
+  let productListHtml = "";
   for (const product of cart.products) {
     const objectProduct = {
       product_id: product.product_id,
@@ -70,10 +78,26 @@ module.exports.order = async (req, res) => {
 
     const productInfo = await Product.findOne({
       _id: product.product_id,
-    }).select("price discountPercentage");
+    }).select("price discountPercentage thumbnail title");
     objectProduct.price = productInfo.price;
     objectProduct.discountPercentage = productInfo.discountPercentage;
     products.push(objectProduct);
+    console.log(product);
+    productListHtml += `
+    <div style="display: flex; align-items: center; margin: 20px 0;">
+      <img src="${productInfo.thumbnail}" alt="${
+      productInfo.title
+    }" style="width: 80px; height: 80px; margin-right: 15px; border-radius: 8px;">
+      <div>
+        <p style="margin: 0;"><strong>${productInfo.title}</strong></p>
+        <p style="margin: 0;">Số lượng: ${product.quantity}</p>
+        <p style="margin: 0;">Giá: ${productsHelper.priceNewProduct(
+          productInfo
+        )} VND</p>
+        <p style="margin: 0;">Giảm giá: ${productInfo.discountPercentage}%</p>
+      </div>
+    </div>
+  `;
   }
 
   const orderInfo = {
@@ -84,7 +108,6 @@ module.exports.order = async (req, res) => {
   };
   const order = new Order(orderInfo);
   order.save();
-
   await Cart.updateOne(
     {
       _id: cartId,
@@ -93,7 +116,66 @@ module.exports.order = async (req, res) => {
       products: [],
     }
   );
+  // Neu ton tai email thi gui mai qua OTP qua email
+  // Generate product list HTML
+  const subject = `Xác nhận đơn hàng ${order._id} từ NTK`;
+  const html = `
+<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd;">
+    <p>Xin chào ${fullName},</p>
+    <p>Cảm ơn Anh/Chị đã đặt hàng tại <strong>NTK!</strong></p>
+    <p>Đơn hàng của Anh/Chị đã được tiếp nhận, chúng tôi sẽ nhanh chóng liên hệ với Anh/Chị.</p>
+    
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
+    
+    <table style="width: 100%; margin-bottom: 20px;">
+        <tr>
+            <td style="vertical-align: top;">
+                <h3>Thông tin mua hàng</h3>
+                <p>${fullName}</p>
+                <p><a href="mailto:${email}" style="color: #007bff;">${email}</a></p>
+                <p>${phone}</p>
+            </td>
+            <td style="vertical-align: top;">
+                <h3>Địa chỉ nhận hàng</h3>
+                <p>${address}</p>
+            </td>
+        </tr>
+    </table>   
+    <table style="width: 100%; margin-bottom: 20px;">
+        <tr>
+            <td>
+                <strong>Phương thức thanh toán</strong>
+                <p>Thanh toán khi giao hàng (COD)</p>
+            </td>
+            <td>
+                <strong>Phương thức vận chuyển</strong>
+                <p>Giao hàng tận nơi</p>
+            </td>
+        </tr>
+    </table>
+    
+    <h3>Thông tin đơn hàng</h3>
+    <p>Mã đơn hàng: ${order._id}</p>
+    <p>Ngày đặt hàng: ${new Date().toLocaleDateString()}</p>
 
+    ${productListHtml}
+    
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
+    
+    <table style="width: 100%; margin-bottom: 20px; text-align: right;">
+        <tr>
+            <td>Phí vận chuyển:</td>
+            <td>40.000 VND</td>
+        </tr>
+        <tr>
+            <td><strong>Thành tiền:</strong></td>
+            <td><strong></strong></td>
+        </tr>
+    </table>
+</div>
+`;
+
+  sendMailHelper.sendMail(email, subject, html);
   res.json(order);
 };
 
@@ -121,6 +203,7 @@ module.exports.success = async (req, res) => {
     return {
       ...item.toJSON(),
       totalPrice: order.totalPrice,
+      productInfo: item.productInfo,
       priceNew: item.priceNew,
       totalPriceProduct: item.totalPriceProduct,
     };

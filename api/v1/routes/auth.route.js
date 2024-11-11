@@ -3,6 +3,14 @@ const router = express.Router();
 
 const controller = require("../controllers/auth.controller");
 
+router.get("/", controller.index);
+
+router.get("/detail/:id", controller.detail);
+
+router.patch("/edit/:id", controller.edit);
+
+router.patch("/delete/:id", controller.delete);
+
 router.post("/google", controller.googleLogin);
 
 router.post("/register", controller.register);

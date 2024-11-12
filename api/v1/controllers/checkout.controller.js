@@ -60,29 +60,28 @@ module.exports.order = async (req, res) => {
   const phone = req.body.phone;
   const address = req.body.address;
   const note = req.body.note;
-
-  console.log(userInfo);
   const cart = await Cart.findOne({
     _id: cartId,
   });
-
   const products = [];
   let productListHtml = "";
+  let objectProduct = {
+    product_id: String,
+    price: Number,
+    discountPercentage: Number,
+    quantity: Number,
+    totalPrice: Number,
+  };
   for (const product of cart.products) {
-    const objectProduct = {
-      product_id: product.product_id,
-      price: Number,
-      discountPercentage: Number,
-      quantity: product.quantity,
-    };
-
     const productInfo = await Product.findOne({
       _id: product.product_id,
     }).select("price discountPercentage thumbnail title");
-    objectProduct.price = productInfo.price;
+    objectProduct.product_id = product._id;
+    objectProduct.price = productsHelper.priceNewProduct(productInfo);
     objectProduct.discountPercentage = productInfo.discountPercentage;
+    objectProduct.quantity = product.quantity;
+    product.totalPriceProduct = objectProduct.price * objectProduct.quantity;
     products.push(objectProduct);
-    console.log(product);
     productListHtml += `
     <div style="display: flex; align-items: center; margin: 20px 0;">
       <img src="${productInfo.thumbnail}" alt="${
@@ -99,6 +98,10 @@ module.exports.order = async (req, res) => {
     </div>
   `;
   }
+  objectProduct.totalPrice = cart.products.reduce(
+    (sum, item) => sum + item.totalPriceProduct,
+    0
+  );
 
   const orderInfo = {
     cart_id: cartId,

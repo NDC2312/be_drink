@@ -17,6 +17,7 @@ const orderSchema = new mongoose.Schema(
         price: Number,
         discountPercentage: Number,
         quantity: Number,
+        totalPrice: Number,
       },
     ],
     status: {

@@ -6,6 +6,7 @@ const Account = require("./account.route");
 const Role = require("./role.route");
 const Auth = require("./auth.route");
 const Checkout = require("./checkout.route");
+const Order = require("./order.router");
 
 //client
 const ProductsClient = require("./products-client");
@@ -34,4 +35,5 @@ module.exports = (app) => {
 
   app.use(version + "/auth", Auth);
   app.use(version + "/checkout", Checkout);
+  app.use(version + "/order", Order);
 };

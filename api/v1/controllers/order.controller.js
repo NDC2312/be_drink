@@ -42,7 +42,7 @@ module.exports.index = async (req, res) => {
       .limit(objectPagination.limitProduct)
       .skip(objectPagination.skip);
 
-    res.json(cart);
+    res.json({ cart, totalOrder: countProducts });
   } catch (error) {
     res.json({
       code: 400,

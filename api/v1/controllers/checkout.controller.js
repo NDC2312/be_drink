@@ -67,6 +67,7 @@ module.exports.order = async (req, res) => {
   let productListHtml = "";
   let objectProduct = {
     product_id: String,
+    title: String,
     price: Number,
     discountPercentage: Number,
     quantity: Number,
@@ -76,6 +77,7 @@ module.exports.order = async (req, res) => {
     const productInfo = await Product.findOne({
       _id: product.product_id,
     }).select("price discountPercentage thumbnail title");
+    objectProduct.title = productInfo.title;
     objectProduct.product_id = product._id;
     objectProduct.price = productsHelper.priceNewProduct(productInfo);
     objectProduct.discountPercentage = productInfo.discountPercentage;

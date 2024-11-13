@@ -1,6 +1,4 @@
 const Order = require("../models/order.model");
-const Product = require("../models/products.model");
-const productsHelper = require("../../../Helper/product.helper");
 const searchHelpers = require("../../../Helper/search.helper");
 const paginationHelpers = require("../../../Helper/pagination.helper");
 
@@ -37,12 +35,14 @@ module.exports.index = async (req, res) => {
     );
 
     // -- end pagination --
-    const cart = await Order.find(find)
+    const order = await Order.find(find)
       .sort(sort)
       .limit(objectPagination.limitProduct)
       .skip(objectPagination.skip);
 
-    res.json({ cart, totalOrder: countProducts });
+    const totalPrice = order.reduce((sum, item) => sum + item.totalPrice, 0);
+    console.log(totalPrice);
+    res.json({ order, totalOrder: countProducts, totalPrice: totalPrice });
   } catch (error) {
     res.json({
       code: 400,

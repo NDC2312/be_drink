@@ -71,14 +71,14 @@ module.exports.order = async (req, res) => {
     price: Number,
     discountPercentage: Number,
     quantity: Number,
-    totalPrice: Number,
   };
   for (const product of cart.products) {
     const productInfo = await Product.findOne({
       _id: product.product_id,
     }).select("price discountPercentage thumbnail title");
+    console.log(productInfo);
     objectProduct.title = productInfo.title;
-    objectProduct.product_id = product._id;
+    objectProduct.product_id = product.product_id;
     objectProduct.price = productsHelper.priceNewProduct(productInfo);
     objectProduct.discountPercentage = productInfo.discountPercentage;
     objectProduct.quantity = product.quantity;
@@ -100,16 +100,17 @@ module.exports.order = async (req, res) => {
     </div>
   `;
   }
-  objectProduct.totalPrice = cart.products.reduce(
+  const totalPrice = cart.products.reduce(
     (sum, item) => sum + item.totalPriceProduct,
     0
   );
-
+  console.log(products);
   const orderInfo = {
     cart_id: cartId,
     user_id: user_id,
     userInfo: userInfo,
     products: products,
+    totalPrice: totalPrice,
   };
   const order = new Order(orderInfo);
   order.save();
@@ -191,15 +192,16 @@ module.exports.success = async (req, res) => {
   });
 
   for (const product of order.products) {
+    console.log(product.product_id);
     const productInfo = await Product.findOne({
       _id: product.product_id,
-    }).select("title thumbnail");
+    }).select("title price discountPercentage thumbnail");
+    console.log(productInfo);
     product.productInfo = productInfo;
-    product.priceNew = productsHelper.priceNewProduct(product);
-    product.totalPriceProduct = product.priceNew * product.quantity;
+    product.totalPriceProduct = product.price * product.quantity;
   }
 
-  order.totalPrice = order.products.reduce(
+  const totalPrice = order.products.reduce(
     (sum, item) => sum + item.totalPriceProduct,
     0
   );
@@ -207,7 +209,7 @@ module.exports.success = async (req, res) => {
   const orderNew = order.products.map((item) => {
     return {
       ...item.toJSON(),
-      totalPrice: order.totalPrice,
+      totalPrice: totalPrice,
       productInfo: item.productInfo,
       priceNew: item.priceNew,
       totalPriceProduct: item.totalPriceProduct,

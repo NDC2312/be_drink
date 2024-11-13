@@ -18,9 +18,10 @@ const orderSchema = new mongoose.Schema(
         price: Number,
         discountPercentage: Number,
         quantity: Number,
-        totalPrice: Number,
       },
     ],
+    totalPrice: Number,
+
     status: {
       type: String,
       default: "spending",

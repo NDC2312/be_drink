@@ -140,16 +140,22 @@ module.exports.login = async (req, res) => {
 module.exports.myAuth = async (req, res) => {
   try {
     const tokenAuth = req.headers.authorization.split(" ")[1];
+    const orders = [];
     const auth = await Auth.findOne({
       tokenAuth: tokenAuth,
     }).select("-password -tokenAuth");
     const order = await Order.find({
       user_id: auth._id,
+    }).sort({ createdAt: -1 });
+    orders.push(order);
+    auth.totalOrder = order.length || 0;
+    auth.totalPrice = order.reduce((sum, item) => sum + item.totalPrice, 0);
+    res.json({
+      ...auth.toObject(),
+      order: orders,
+      totalOrder: auth.totalOrder,
+      totalPrice: auth.totalPrice,
     });
-    const totalOrder = order.length || 0;
-    const totalPrice = order.reduce((sum, item) => sum + item.totalPrice, 0);
-    console.log(totalOrder);
-    res.json({ order, auth, totalOrder: totalOrder, totalPrice: totalPrice });
   } catch (error) {
     res.json({
       code: 400,

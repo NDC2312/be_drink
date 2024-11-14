@@ -147,8 +147,9 @@ module.exports.myAuth = async (req, res) => {
       user_id: auth._id,
     });
     const totalOrder = await Order.countDocuments({ user_id: auth._id });
-
-    res.json({ auth, order, totalOrder });
+    const totalPrice = order.reduce((sum, item) => sum + item.totalPrice, 0);
+    console.log(totalPrice);
+    res.json({ auth, order, totalOrder, totalPrice });
   } catch (error) {
     res.json({
       code: 400,

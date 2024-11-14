@@ -146,8 +146,9 @@ module.exports.myAuth = async (req, res) => {
     const order = await Order.find({
       user_id: auth._id,
     });
-    console.log(order);
-    res.json({ auth, order });
+    const totalOrder = await Order.countDocuments({ user_id: auth._id });
+
+    res.json({ auth, order, totalOrder });
   } catch (error) {
     res.json({
       code: 400,

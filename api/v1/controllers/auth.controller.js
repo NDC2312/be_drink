@@ -1,4 +1,5 @@
 const Auth = require("../models/auth.model");
+const Order = require("../models/order.model");
 const generateHeper = require("../../../Helper/generate.helper");
 const md5 = require("md5");
 
@@ -139,11 +140,14 @@ module.exports.login = async (req, res) => {
 module.exports.myAuth = async (req, res) => {
   try {
     const tokenAuth = req.headers.authorization.split(" ")[1];
-    console.log(tokenAuth);
     const auth = await Auth.findOne({
       tokenAuth: tokenAuth,
     }).select("-password -tokenAuth");
-    res.json(auth);
+    const order = await Order.find({
+      user_id: auth._id,
+    });
+    console.log(order);
+    res.json({ auth, order });
   } catch (error) {
     res.json({
       code: 400,

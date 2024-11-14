@@ -19,4 +19,6 @@ router.post("/login", controller.login);
 
 router.get("/myAuth", controller.myAuth);
 
+router.get("/myOrder", controller.myOrder);
+
 module.exports = router;

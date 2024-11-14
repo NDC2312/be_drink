@@ -143,28 +143,14 @@ module.exports.myAuth = async (req, res) => {
     const auth = await Auth.findOne({
       tokenAuth: tokenAuth,
     }).select("-password -tokenAuth");
-    res.json(auth);
-  } catch (error) {
-    res.json({
-      code: 400,
-      message: "Lỗi, token.",
-    });
-  }
-};
 
-// [GET] api/v1/auth/myOrder
-module.exports.myOrder = async (req, res) => {
-  try {
-    const tokenAuth = req.headers.authorization.split(" ")[1];
-    const auth = await Auth.findOne({
-      tokenAuth: tokenAuth,
-    });
     const order = await Order.find({
       user_id: auth._id,
     }).sort({ createdAt: -1 });
     order.totalOrder = order.length || 0;
     order.totalPrice = order.reduce((sum, item) => sum + item.totalPrice, 0);
     res.json({
+      auth,
       order,
       totalOrder: order.totalOrder,
       totalPrice: order.totalPrice,

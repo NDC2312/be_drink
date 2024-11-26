@@ -330,44 +330,42 @@ module.exports.delete = async (req, res) => {
 
 // [POST] api/v1/user/password/forgotPassword
 module.exports.forgotPassword = async (req, res) => {
-  console.log(req.body.email);
-  res.json("oke");
-  // const email = req.body.email;
-  // const user = await Auth.findOne({
-  //   email: email,
-  //   deleted: false,
-  // });
-  // if (!user) {
-  //   res.json({
-  //     code: 400,
-  //     message: "Email khong ton tai",
-  //   });
-  //   return;
-  // }
-  // // Luu thong tin vao DB
-  // const otp = generateHeper.generateRandomNumber(4);
-  // const timeExpire = 5;
+  const email = req.body.email;
+  const user = await Auth.findOne({
+    email: email,
+    deleted: false,
+  });
+  if (!user) {
+    res.json({
+      code: 400,
+      message: "Email khong ton tai",
+    });
+    return;
+  }
+  // Luu thong tin vao DB
+  const otp = generateHeper.generateRandomNumber(4);
+  const timeExpire = 5;
 
-  // const objectForgotPassword = {
-  //   email: email,
-  //   otp: otp,
-  //   expireAt: Date.now() + timeExpire * 60 * 1000,
-  // };
-  // const forgotPassword = new ForgotPassword(objectForgotPassword);
+  const objectForgotPassword = {
+    email: email,
+    otp: otp,
+    expireAt: Date.now() + timeExpire * 60 * 1000,
+  };
+  const forgotPassword = new ForgotPassword(objectForgotPassword);
 
-  // await forgotPassword.save();
-  // // Gui ma OTP qua user
-  // // Neu ton tai email thi gui mai qua OTP qua email
-  // const subject = "Ma OTP xac minh lay lai mat khau";
-  // const html = `
-  //      Ma OTP de lay lai mat khau <b>${otp}</b>. Thoi han su dung la 3p
-  //  `;
-  // sendMailHeper.sendMail(email, subject, html);
+  await forgotPassword.save();
+  // Gui ma OTP qua user
+  // Neu ton tai email thi gui mai qua OTP qua email
+  const subject = "Ma OTP xac minh lay lai mat khau";
+  const html = `
+       Ma OTP de lay lai mat khau <b>${otp}</b>. Thoi han su dung la 3p
+   `;
+  sendMailHeper.sendMail(email, subject, html);
 
-  // res.json({
-  //   code: 200,
-  //   message: "Da gui ma OTP qua email",
-  // });
+  res.json({
+    code: 200,
+    message: "Da gui ma OTP qua email",
+  });
 };
 
 // [POST] api/v1/user/password/otp
@@ -401,11 +399,11 @@ module.exports.otpPassword = async (req, res) => {
 
 // [POST] api/v1/user/password/reset
 module.exports.resetPassword = async (req, res) => {
-  const token = req.body.token;
+  const tokenAuth = req.body.tokenAuth;
   const password = req.body.password;
 
   const user = await Auth.findOne({
-    token: token,
+    tokenAuth: tokenAuth,
   });
 
   if (md5(password) === user.password) {
@@ -417,7 +415,7 @@ module.exports.resetPassword = async (req, res) => {
   }
   await Auth.updateOne(
     {
-      token: token,
+      tokenAuth: tokenAuth,
     },
     {
       password: md5(password),

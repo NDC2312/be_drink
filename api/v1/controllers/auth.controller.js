@@ -1,6 +1,10 @@
 const Auth = require("../models/auth.model");
 const Order = require("../models/order.model");
+const ForgotPassword = require("../models/forgot-password.model");
+
 const generateHeper = require("../../../Helper/generate.helper");
+const sendMailHeper = require("../../../Helper/sendMail");
+
 const md5 = require("md5");
 
 const { OAuth2Client } = require("google-auth-library");
@@ -323,3 +327,104 @@ module.exports.delete = async (req, res) => {
 //       break;
 //   }
 // };
+
+// [POST] api/v1/user/password/forgotPassword
+module.exports.forgotPassword = async (req, res) => {
+  console.log(req.body.email);
+  res.json("oke");
+  // const email = req.body.email;
+  // const user = await Auth.findOne({
+  //   email: email,
+  //   deleted: false,
+  // });
+  // if (!user) {
+  //   res.json({
+  //     code: 400,
+  //     message: "Email khong ton tai",
+  //   });
+  //   return;
+  // }
+  // // Luu thong tin vao DB
+  // const otp = generateHeper.generateRandomNumber(4);
+  // const timeExpire = 5;
+
+  // const objectForgotPassword = {
+  //   email: email,
+  //   otp: otp,
+  //   expireAt: Date.now() + timeExpire * 60 * 1000,
+  // };
+  // const forgotPassword = new ForgotPassword(objectForgotPassword);
+
+  // await forgotPassword.save();
+  // // Gui ma OTP qua user
+  // // Neu ton tai email thi gui mai qua OTP qua email
+  // const subject = "Ma OTP xac minh lay lai mat khau";
+  // const html = `
+  //      Ma OTP de lay lai mat khau <b>${otp}</b>. Thoi han su dung la 3p
+  //  `;
+  // sendMailHeper.sendMail(email, subject, html);
+
+  // res.json({
+  //   code: 200,
+  //   message: "Da gui ma OTP qua email",
+  // });
+};
+
+// [POST] api/v1/user/password/otp
+module.exports.otpPassword = async (req, res) => {
+  const email = req.body.email;
+  const otp = req.body.otp;
+
+  const result = await ForgotPassword.findOne({
+    email: email,
+    otp: otp,
+  });
+
+  if (!result) {
+    res.json({
+      code: 400,
+      message: "Ma otp khong hop le",
+    });
+    return;
+  }
+  const user = await Auth.findOne({
+    email: email,
+  });
+  const token = user.token;
+  res.cookie("token", token);
+  res.json({
+    code: 200,
+    message: "xac thuc thanh cong",
+    token: token,
+  });
+};
+
+// [POST] api/v1/user/password/reset
+module.exports.resetPassword = async (req, res) => {
+  const token = req.body.token;
+  const password = req.body.password;
+
+  const user = await Auth.findOne({
+    token: token,
+  });
+
+  if (md5(password) === user.password) {
+    res.json({
+      code: 400,
+      message: "Vui long khong nhap mat khau cu",
+    });
+    return;
+  }
+  await Auth.updateOne(
+    {
+      token: token,
+    },
+    {
+      password: md5(password),
+    }
+  );
+  res.json({
+    code: 200,
+    message: "Doi mat khau thanh cong",
+  });
+};

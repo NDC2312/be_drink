@@ -5,6 +5,44 @@ const ProductHelper = require("../../../Helper/product.helper");
 const productCategoryHelper = require("../../../Helper/product-category.helper");
 const createTreeHelper = require("../../../Helper/createTree.helper");
 
+// [GET] /api/v1/products/search
+module.exports.searchProducts = async (req, res) => {
+  try {
+    const name = req.query.name?.trim() || "";
+    if (!name) {
+      return res.status(400).json({
+        code: 400,
+        message: "Vui lòng cung cấp từ khóa tìm kiếm",
+      });
+    }
+    const products = await Products.find({
+      title: { $regex: name, $options: "i" },
+      status: "active",
+      deleted: false,
+    });
+
+    if (products.length === 0) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy sản phẩm phù hợp",
+      });
+    }
+
+    // Trả về danh sách sản phẩm
+    res.status(200).json({
+      code: 200,
+      message: "Tìm kiếm thành công",
+      data: products,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      code: 500,
+      message: "Có lỗi xảy ra, vui lòng thử lại",
+    });
+  }
+};
+
 // [GET] api/v1/products
 module.exports.index = async (req, res) => {
   let find = {

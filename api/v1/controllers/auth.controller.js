@@ -330,7 +330,6 @@ module.exports.delete = async (req, res) => {
 
 // [POST] api/v1/user/password/forgotPassword
 module.exports.forgotPassword = async (req, res) => {
-  console.log(email);
   const email = req.body.email;
   const user = await Auth.findOne({
     email: email,
@@ -362,16 +361,7 @@ module.exports.forgotPassword = async (req, res) => {
        Ma OTP de lay lai mat khau <b>${otp}</b>. Thoi han su dung la 3p
    `;
 
-  try {
-    await sendMailHeper.sendMail(email, subject, html);
-  } catch (error) {
-    console.error("Error sending email:", error.message);
-    return res.json({
-      code: 500,
-      message: "Lỗi gửi email, vui lòng thử lại sau",
-    });
-  }
-
+  sendMailHeper.sendMail(email, subject, html);
   res.json({
     code: 200,
     message: "Da gui ma OTP qua email",
@@ -398,12 +388,12 @@ module.exports.otpPassword = async (req, res) => {
   const user = await Auth.findOne({
     email: email,
   });
-  const token = user.token;
-  res.cookie("token", token);
+  const tokenAuth = user.tokenAuth;
+  res.cookie("token", tokenAuth);
   res.json({
     code: 200,
     message: "xac thuc thanh cong",
-    token: token,
+    tokenAuth: tokenAuth,
   });
 };
 
@@ -411,7 +401,7 @@ module.exports.otpPassword = async (req, res) => {
 module.exports.resetPassword = async (req, res) => {
   const tokenAuth = req.body.tokenAuth;
   const password = req.body.password;
-
+  console.log(password);
   const user = await Auth.findOne({
     tokenAuth: tokenAuth,
   });
@@ -423,6 +413,7 @@ module.exports.resetPassword = async (req, res) => {
     });
     return;
   }
+  console.log(user);
   await Auth.updateOne(
     {
       tokenAuth: tokenAuth,

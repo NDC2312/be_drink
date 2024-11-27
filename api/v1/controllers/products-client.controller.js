@@ -80,7 +80,7 @@ module.exports.featured = async (req, res) => {
 
 // [GET] api/v1/products/category
 module.exports.category = async (req, res) => {
-  console.log(req.params.slugCategory);
+  console.log("req.params.slugCategory", req.params.slugCategory);
   let find = {
     deleted: false,
     status: "active",
@@ -92,7 +92,7 @@ module.exports.category = async (req, res) => {
   );
   const listSubCategoryId = listSubCategory.map((item) => item.id);
   const products = await Products.find({
-    product_category_id: { $in: category.id, ...listSubCategoryId },
+    product_category_id: { $in: [category.id, ...listSubCategoryId] },
     status: "active",
     deleted: false,
   }).sort({ position: "desc" });

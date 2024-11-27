@@ -330,6 +330,7 @@ module.exports.delete = async (req, res) => {
 
 // [POST] api/v1/user/password/forgotPassword
 module.exports.forgotPassword = async (req, res) => {
+  console.log(email);
   const email = req.body.email;
   const user = await Auth.findOne({
     email: email,
@@ -360,7 +361,16 @@ module.exports.forgotPassword = async (req, res) => {
   const html = `
        Ma OTP de lay lai mat khau <b>${otp}</b>. Thoi han su dung la 3p
    `;
-  sendMailHeper.sendMail(email, subject, html);
+
+  try {
+    await sendMailHeper.sendMail(email, subject, html);
+  } catch (error) {
+    console.error("Error sending email:", error.message);
+    return res.json({
+      code: 500,
+      message: "Lỗi gửi email, vui lòng thử lại sau",
+    });
+  }
 
   res.json({
     code: 200,

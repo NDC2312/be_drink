@@ -2,10 +2,11 @@ const Blog = require("../models/blog.model");
 const BlogCategory = require("../models/blogs-category.model");
 const paginationHelpers = require("../../../Helper/pagination.helper");
 const productCategoryHelper = require("../../../Helper/product-category.helper");
+const createTreeHelper = require("../../../Helper/createTree.helper");
 
 // [GET] api/v1/products-category
 module.exports.blogCategory = async (req, res) => {
-  const productCategory = await Blog.find({
+  const productCategory = await BlogCategory.find({
     deleted: false,
     status: "active",
   });

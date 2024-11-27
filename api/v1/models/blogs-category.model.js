@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-
+var slug = require("mongoose-slug-updater");
+mongoose.plugin(slug);
 const blogsCategorySchema = new mongoose.Schema(
   {
     title: String,
@@ -14,6 +15,11 @@ const blogsCategorySchema = new mongoose.Schema(
     deleted: {
       type: Boolean,
       default: false,
+    },
+    slug: {
+      type: String,
+      slug: "title",
+      unique: true,
     },
   },
   {

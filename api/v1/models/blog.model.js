@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+var slug = require("mongoose-slug-updater");
+mongoose.plugin(slug);
 
 const blogSchema = new mongoose.Schema(
   {
@@ -29,6 +31,11 @@ const blogSchema = new mongoose.Schema(
     deleted: {
       type: Boolean,
       default: false,
+    },
+    slug: {
+      type: String,
+      slug: "title",
+      unique: true,
     },
   },
   {

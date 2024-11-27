@@ -10,6 +10,7 @@ const Order = require("./order.router");
 
 //client
 const ProductsClient = require("./products-client");
+const BlogsClient = require("./blog-client.route");
 const Cart = require("./cart.route");
 
 const requireAuth = require("../middlewares/auth.middleware");
@@ -19,6 +20,7 @@ module.exports = (app) => {
 
   app.use(version + "/products", requireAuth.requireAuth, Products);
   app.use(version + "/products-client", ProductsClient);
+  app.use(version + "/blogs-client", BlogsClient);
   app.use(
     version + "/products-category",
     requireAuth.requireAuth,

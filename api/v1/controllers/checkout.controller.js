@@ -65,25 +65,25 @@ module.exports.order = async (req, res) => {
   });
   const products = [];
   let productListHtml = "";
-  let objectProduct = {
-    product_id: String,
-    title: String,
-    price: Number,
-    discountPercentage: Number,
-    quantity: Number,
-  };
+
   for (const product of cart.products) {
+    console.log();
+    const objectProduct = {
+      product_id: product.product_id,
+      title: String,
+      price: Number,
+      discountPercentage: Number,
+      quantity: product.quantity,
+    };
     const productInfo = await Product.findOne({
       _id: product.product_id,
     }).select("price discountPercentage thumbnail title");
-    console.log(productInfo);
-    objectProduct.title = productInfo.title;
-    objectProduct.product_id = product.product_id;
+    objectProduct.title = productsHelper.title;
     objectProduct.price = productsHelper.priceNewProduct(productInfo);
     objectProduct.discountPercentage = productInfo.discountPercentage;
-    objectProduct.quantity = product.quantity;
     product.totalPriceProduct = objectProduct.price * objectProduct.quantity;
     products.push(objectProduct);
+
     productListHtml += `
     <div style="display: flex; align-items: center; margin: 20px 0;">
       <img src="${productInfo.thumbnail}" alt="${
@@ -104,7 +104,6 @@ module.exports.order = async (req, res) => {
     (sum, item) => sum + item.totalPriceProduct,
     0
   );
-  console.log(products);
   const orderInfo = {
     cart_id: cartId,
     user_id: user_id,
@@ -124,6 +123,7 @@ module.exports.order = async (req, res) => {
   );
   // Neu ton tai email thi gui mai qua OTP qua email
   // Generate product list HTML
+  console.log("email", email);
   const subject = `Xác nhận đơn hàng ${order._id} từ NTK`;
   const html = `
 <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd;">
@@ -175,13 +175,13 @@ module.exports.order = async (req, res) => {
         </tr>
         <tr>
             <td><strong>Thành tiền:</strong></td>
-            <td><strong></strong></td>
+            <td><strong>${order.totalPrice}</strong></td>
         </tr>
     </table>
 </div>
 `;
 
-  sendMailHelper.sendMail(email, subject, html);
+  // sendMailHelper.sendMail(email, subject, html);
   res.json(order);
 };
 
@@ -196,9 +196,10 @@ module.exports.success = async (req, res) => {
     const productInfo = await Product.findOne({
       _id: product.product_id,
     }).select("title price discountPercentage thumbnail");
-    console.log(productInfo);
+
+    productInfo.priceNew = productsHelper.priceNewProduct(productInfo);
     product.productInfo = productInfo;
-    product.totalPriceProduct = product.price * product.quantity;
+    product.totalPriceProduct = productInfo.priceNew * product.quantity;
   }
 
   const totalPrice = order.products.reduce(
@@ -211,8 +212,6 @@ module.exports.success = async (req, res) => {
       ...item.toJSON(),
       totalPrice: totalPrice,
       productInfo: item.productInfo,
-      priceNew: item.priceNew,
-      totalPriceProduct: item.totalPriceProduct,
     };
   });
 

@@ -104,7 +104,10 @@ module.exports.addCart = async (req, res) => {
 module.exports.delete = async (req, res) => {
   try {
     const cart_id = req.cookies.cartId;
+    console.log(cart_id);
+
     const productId = req.params.productId;
+    console.log(productId);
     await Cart.updateOne(
       {
         _id: cart_id,

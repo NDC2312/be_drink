@@ -10,8 +10,6 @@ const blogSchema = new mongoose.Schema(
     position: Number,
     thumbnail: String,
     status: String,
-    // keyword: [{ type: String }],
-    // tag: [{ type: String }],
     blog_parent_id: {
       type: String,
       default: "",
